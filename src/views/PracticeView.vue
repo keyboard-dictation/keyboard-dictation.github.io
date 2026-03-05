@@ -386,7 +386,7 @@ function nextHiddenIndexFrom(start: number | null): number | null {
 
 function focusInput() {
   nextTick(() => {
-    hiddenInputRef.value?.focus();
+    hiddenInputRef.value?.focus({ preventScroll: true });
   });
 }
 
