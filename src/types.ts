@@ -42,3 +42,7 @@ export interface ExportData {
   practiceRecords: PracticeRecord[];
 }
 
+// 全局常量由 Vite 在构建时注入
+declare const __APP_COMMIT__: string;
+declare const __APP_REPO__: string;
+
