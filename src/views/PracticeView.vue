@@ -526,7 +526,7 @@ function checkResult() {
 }
 
 .practice-text {
-  line-height: 2.6;
+  line-height: 2.0;
   font-family: 'Consolas', 'Courier New', monospace;
   font-size: 16px;
   white-space: pre-wrap;
@@ -539,13 +539,12 @@ function checkResult() {
 }
 
 .letter-wrapper {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
+  position: relative;
+  display: inline-block;
   min-width: 10px;
+  height: 1.2em;
   margin-right: 3px;
-  vertical-align: baseline;
+  vertical-align: bottom;
   cursor: text;
 }
 
@@ -555,10 +554,10 @@ function checkResult() {
 }
 
 .letter-display {
-  min-height: 1.2em;
-  line-height: 1;
+  display: block;
+  min-height: 0.95em;
+  line-height: 1.08;
 }
-
 
 .letter-display.dim {
   color: #999;
@@ -566,10 +565,13 @@ function checkResult() {
 
 .underline {
   /* 用 border 画线，避免 1px 背景在不同位置渲染粗细不一 */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: 0;
   width: 100%;
   min-width: 8px;
-  margin-top: 0;
   flex-shrink: 0;
   border-bottom: 1px solid #ccc;
   box-sizing: border-box;
@@ -594,8 +596,8 @@ function checkResult() {
 .non-letter {
   white-space: pre;
   font-family: inherit;
-  vertical-align: baseline;
-  line-height: 1;
+  vertical-align: bottom;
+  line-height: 1.1;
   cursor: text;
 }
 
