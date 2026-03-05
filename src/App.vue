@@ -3,7 +3,9 @@
     <n-message-provider>
       <n-layout has-sider class="app-layout">
         <n-layout-sider width="200" bordered content-style="padding: 16px 0;">
-          <div class="logo">keyboard-dictation</div>
+          <div class="logo">
+            <img src="/keyboard-dictation-logo.png" alt="keyboard-dictation" class="logo-img" />
+          </div>
           <n-menu
             :options="menuOptions"
             :value="activeKey"
@@ -83,9 +85,14 @@ function handleMenuSelect(key: string) {
 
 .logo {
   padding: 20px 24px 16px;
-  font-weight: 700;
-  font-size: 22px;
-  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-img {
+  height: 36px;
+  width: auto;
 }
 
 .app-header {
