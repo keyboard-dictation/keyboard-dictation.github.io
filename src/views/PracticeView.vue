@@ -21,6 +21,7 @@
             <n-radio-group v-model:value="hideMode" @update:value="onConfigChange">
               <n-radio-button value="all">全部隐藏</n-radio-button>
               <n-radio-button value="random">随机隐藏</n-radio-button>
+              <n-radio-button value="core">核心隐藏</n-radio-button>
               <n-radio-button value="level">按等级隐藏</n-radio-button>
             </n-radio-group>
           </div>
@@ -191,7 +192,7 @@ onMounted(() => {
   const found = loadArticles().find((a) => a.id === id) ?? null;
   article.value = found;
   const settings = loadAppSettings();
-  hideMode.value = settings.defaultHideMode === 'core' ? 'all' : settings.defaultHideMode;
+  hideMode.value = settings.defaultHideMode;
   hideRatio.value = settings.defaultHideRatio;
   vocabLevel.value = settings.defaultVocabLevel;
   if (article.value) {
@@ -206,6 +207,73 @@ function goBack() {
 function isLetter(ch: string) {
   return /[A-Za-z]/.test(ch);
 }
+
+// 核心隐藏模式下保留显示的高频功能词（不隐藏）
+const CORE_VISIBLE_WORDS = new Set(
+  [
+    // 人称代词 & 指示代词
+    'i',
+    'you',
+    'he',
+    'she',
+    'it',
+    'we',
+    'they',
+    'this',
+    'that',
+    'these',
+    'those',
+    // 冠词
+    'a',
+    'an',
+    'the',
+    // be 动词
+    'am',
+    'is',
+    'are',
+    'was',
+    'were',
+    'be',
+    'been',
+    'being',
+    // 助动词 / 情态动词
+    'do',
+    'does',
+    'did',
+    'have',
+    'has',
+    'had',
+    'will',
+    'would',
+    'can',
+    'could',
+    'shall',
+    'should',
+    'may',
+    'might',
+    'must',
+    // 连接词
+    'and',
+    'or',
+    'but',
+    'so',
+    // 常见介词
+    'in',
+    'on',
+    'at',
+    'of',
+    'for',
+    'to',
+    'from',
+    'with',
+    'by',
+    'about',
+    'as',
+    // 其他常见功能词
+    'not',
+    'very'
+  ].map((w) => w.toLowerCase())
+);
 
 /** 将中文/全角标点规范为英文（半角）标点，保证默写界面统一使用英文标点 */
 function normalizeToEnglishPunctuation(text: string): string {
@@ -257,6 +325,20 @@ async function buildSegments() {
     const target = Math.max(1, Math.round(total * hideRatio.value));
     const shuffled = [...letterIndices].sort(() => Math.random() - 0.5);
     indicesToHide = shuffled.slice(0, target);
+  } else if (hideMode.value === 'core') {
+    const words = content.split(/(\s+)/);
+    let pos = 0;
+    for (const w of words) {
+      const plain = w.replace(/[^A-Za-z]/g, '').toLowerCase();
+      if (plain && !CORE_VISIBLE_WORDS.has(plain)) {
+        for (let i = 0; i < w.length; i++) {
+          if (pos + i < segs.length && isLetter(w[i])) {
+            indicesToHide.push(pos + i);
+          }
+        }
+      }
+      pos += w.length;
+    }
   } else if (hideMode.value === 'level') {
     configLoading.value = true;
     try {

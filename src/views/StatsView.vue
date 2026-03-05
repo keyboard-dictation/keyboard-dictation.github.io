@@ -133,7 +133,7 @@ const recordColumns: DataTableColumns<PracticeRecord> = [
       if (row.hideMode === 'all') return '全部隐藏';
       if (row.hideMode === 'random') return '随机隐藏';
       if (row.hideMode === 'level') return row.vocabLevel ? `按等级隐藏 (${row.vocabLevel})` : '按等级隐藏';
-      if (row.hideMode === 'core') return '核心单词隐藏';
+      if (row.hideMode === 'core') return '核心隐藏';
       return row.hideMode;
     }
   },

@@ -15,6 +15,7 @@
           <n-radio-group v-model:value="form.defaultHideMode">
             <n-radio-button value="all">全部隐藏</n-radio-button>
             <n-radio-button value="random">随机隐藏</n-radio-button>
+            <n-radio-button value="core">核心隐藏</n-radio-button>
             <n-radio-button value="level">按等级隐藏</n-radio-button>
           </n-radio-group>
         </n-form-item>

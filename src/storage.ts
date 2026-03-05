@@ -67,8 +67,10 @@ export function loadAppSettings(): AppSettings {
     const mode = parsed.defaultHideMode ?? DEFAULT_SETTINGS.defaultHideMode;
     const level = parsed.defaultVocabLevel ?? DEFAULT_SETTINGS.defaultVocabLevel;
     const validLevel = level === 'B1' || level === 'B2' || level === 'C1' ? level : DEFAULT_SETTINGS.defaultVocabLevel;
+    const validModes: HideMode[] = ['all', 'random', 'level', 'core'];
+    const safeMode = validModes.includes(mode as HideMode) ? (mode as HideMode) : DEFAULT_SETTINGS.defaultHideMode;
     return {
-      defaultHideMode: mode === 'core' ? 'all' : mode,
+      defaultHideMode: safeMode,
       defaultHideRatio:
         typeof parsed.defaultHideRatio === 'number' && parsed.defaultHideRatio >= 0 && parsed.defaultHideRatio <= 1
           ? parsed.defaultHideRatio
