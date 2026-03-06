@@ -1,6 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
 import ArticleListView from './views/ArticleListView.vue';
 import ArticleEditView from './views/ArticleEditView.vue';
+import ArticleView from './views/ArticleView.vue';
 import PracticeView from './views/PracticeView.vue';
 import StatsView from './views/StatsView.vue';
 import SettingsView from './views/SettingsView.vue';
@@ -19,6 +20,12 @@ export const routes: RouteRecordRaw[] = [
     path: '/articles/new',
     name: 'article-new',
     component: ArticleEditView
+  },
+  {
+    path: '/articles/:id/view',
+    name: 'article-view',
+    component: ArticleView,
+    props: true
   },
   {
     path: '/articles/:id/edit',

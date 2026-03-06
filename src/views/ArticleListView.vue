@@ -52,6 +52,10 @@ function handleEdit(row: Article) {
   router.push(`/articles/${row.id}/edit`);
 }
 
+function handleView(row: Article) {
+  router.push(`/articles/${row.id}/view`);
+}
+
 function handlePractice(row: Article) {
   router.push(`/practice/${row.id}`);
 }
@@ -67,13 +71,6 @@ const columns: DataTableColumns<Article> = [
     title: '标题',
     key: 'title',
     width: 220
-  },
-  {
-    title: '描述',
-    key: 'description',
-    ellipsis: {
-      tooltip: true
-    }
   },
   {
     title: '字数',
@@ -102,7 +99,7 @@ const columns: DataTableColumns<Article> = [
   {
     title: '操作',
     key: 'actions',
-    width: 260,
+    width: 320,
     render(row) {
       return h(
         NSpace,
@@ -113,6 +110,15 @@ const columns: DataTableColumns<Article> = [
               NButton,
               {
                 size: 'small',
+                onClick: () => handleView(row)
+              },
+              { default: () => '查看短文' }
+            ),
+            h(
+              NButton,
+              {
+                size: 'small',
+                type: 'primary',
                 onClick: () => handlePractice(row)
               },
               { default: () => '开始默写' }
@@ -121,6 +127,7 @@ const columns: DataTableColumns<Article> = [
               NButton,
               {
                 size: 'small',
+                tertiary: true,
                 onClick: () => handleEdit(row)
               },
               { default: () => '编辑' }
@@ -130,7 +137,7 @@ const columns: DataTableColumns<Article> = [
               {
                 size: 'small',
                 type: 'error',
-                secondary: true,
+                tertiary: true,
                 onClick: () => handleDelete(row)
               },
               { default: () => '删除' }

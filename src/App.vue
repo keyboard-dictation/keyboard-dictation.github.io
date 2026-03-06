@@ -113,6 +113,7 @@ const activeKey = computed(() => {
 
 const currentPageTitle = computed(() => {
   const path = route.path;
+  if (path.startsWith('/articles/') && path.includes('/view')) return '查看短文';
   if (path.startsWith('/articles') && !path.includes('new')) return '短文列表';
   if (path.includes('new')) return '新增短文';
   if (path.startsWith('/practice')) return '默写练习';
