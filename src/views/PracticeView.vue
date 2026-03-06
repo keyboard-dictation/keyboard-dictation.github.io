@@ -413,7 +413,7 @@ function onSegmentClick(index: number) {
   }
   nextTick(() => {
     scrollActiveCellIntoView();
-    hiddenInputRef.value?.focus();
+    hiddenInputRef.value?.focus({ preventScroll: true });
   });
 }
 
