@@ -1,7 +1,7 @@
 <template>
   <n-config-provider :theme="theme">
     <n-message-provider>
-      <n-layout has-sider class="app-layout">
+      <n-layout has-sider class="app-layout" :class="{ 'theme-dark': themeMode === 'dark' }">
         <n-layout-sider width="200" bordered content-style="padding: 16px 0;">
           <div class="logo">
             <div class="logo-main">
@@ -20,24 +20,43 @@
         <n-layout>
           <n-layout-header bordered class="app-header">
             <div class="app-header-inner">
-              <div class="header-github">
-                <a
-                  href="https://github.com/keyboard-dictation/keyboard-dictation.github.io"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="github-link"
-                  aria-label="Open keyboard-dictation on GitHub"
+              <div class="header-actions">
+                <n-button
+                  quaternary
+                  circle
+                  class="theme-toggle"
+                  :aria-label="themeMode === 'dark' ? '切换到浅色模式' : '切换到深色模式'"
+                  @click="toggleTheme"
                 >
-                  <svg viewBox="0 0 16 16" aria-hidden="true" class="github-icon">
-                    <path
-                      d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
-                      0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-                      0-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
-                      0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27
-                      1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
-                      0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
-                    />
-                  </svg>
+                  <template #icon>
+                    <!-- 当前为浅色时显示月亮，点击切换深色 -->
+                    <svg v-if="themeMode === 'light'" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                    <!-- 当前为深色时显示太阳，点击切换浅色 -->
+                    <svg v-else class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="4" />
+                      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                    </svg>
+                  </template>
+                </n-button>
+                <a
+                href="https://github.com/keyboard-dictation/keyboard-dictation.github.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="github-link"
+                aria-label="Open keyboard-dictation on GitHub"
+              >
+                <svg viewBox="0 0 16 16" aria-hidden="true" class="github-icon">
+                  <path
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+                    0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                    0-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+                    0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27
+                    1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                    0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+                  />
+                </svg>
                 </a>
               </div>
             </div>
@@ -67,16 +86,38 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { darkTheme, lightTheme, NConfigProvider, NLayout, NLayoutSider, NLayoutHeader, NLayoutContent, NMenu, NMessageProvider, type MenuOption } from 'naive-ui';
+import { darkTheme, lightTheme, NButton, NConfigProvider, NLayout, NLayoutSider, NLayoutHeader, NLayoutContent, NMenu, NMessageProvider, type MenuOption } from 'naive-ui';
+import { loadAppSettings, saveAppSettings } from './storage';
+import type { ThemeMode } from './types';
 
 const router = useRouter();
 const route = useRoute();
 
-const theme = computed(() => lightTheme);
+const themeMode = ref<ThemeMode>('light');
+
+onMounted(() => {
+  themeMode.value = loadAppSettings().theme;
+});
+
+const theme = computed(() => (themeMode.value === 'dark' ? darkTheme : lightTheme));
 const appCommit = __APP_COMMIT__;
 const appRepo = __APP_REPO__;
+
+function setTheme(mode: ThemeMode) {
+  themeMode.value = mode;
+  saveAppSettings({ ...loadAppSettings(), theme: mode });
+}
+
+function toggleTheme() {
+  setTheme(themeMode.value === 'dark' ? 'light' : 'dark');
+}
+
+provide<{ themeMode: typeof themeMode; setTheme: (mode: ThemeMode) => void }>('theme', {
+  themeMode,
+  setTheme
+});
 
 const menuOptions: MenuOption[] = [
   {
@@ -213,9 +254,20 @@ function handleMenuSelect(key: string) {
   margin: 0 auto;
 }
 
-.header-github {
+.header-actions {
   display: flex;
   align-items: center;
+  gap: 4px;
+}
+
+.theme-toggle {
+  flex-shrink: 0;
+}
+
+.theme-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .github-link {
@@ -240,6 +292,54 @@ function handleMenuSelect(key: string) {
   padding: 24px;
   overflow: auto;
   background: #f5f6f8;
+}
+
+/* Dark theme overrides for custom header/content/footer */
+.theme-dark .app-header {
+  background: #18181c;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark .app-content {
+  background: #101014;
+}
+
+.theme-dark .logo-sub {
+  color: #999;
+}
+
+.theme-dark .github-link {
+  color: #9ca3af;
+}
+
+.theme-dark .github-link:hover {
+  color: #fff;
+}
+
+.theme-dark .theme-toggle {
+  color: #9ca3af;
+}
+
+.theme-dark .theme-toggle:hover {
+  color: #fff;
+}
+
+.theme-dark .app-footer {
+  border-top-color: #303030;
+  color: #9ca3af;
+}
+
+.theme-dark .footer-sep {
+  color: #6b7280;
+}
+
+.theme-dark .footer-link {
+  color: #9ca3af;
+}
+
+.theme-dark .footer-link:hover {
+  color: #fff;
+  text-decoration: underline;
 }
 
 .content-inner {

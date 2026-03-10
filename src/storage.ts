@@ -1,4 +1,4 @@
-import type { Article, PracticeRecord, AppSettings, ExportData } from './types';
+import type { Article, PracticeRecord, AppSettings, ExportData, ThemeMode } from './types';
 
 const EXPORT_VERSION = 1;
 
@@ -9,7 +9,8 @@ const SETTINGS_KEY = 'beibeibei_settings';
 const DEFAULT_SETTINGS: AppSettings = {
   defaultHideMode: 'all',
   defaultHideRatio: 0.6,
-  defaultVocabLevel: 'B1'
+  defaultVocabLevel: 'B1',
+  theme: 'light'
 };
 
 function safeParse<T>(raw: string | null, fallback: T): T {
@@ -69,13 +70,15 @@ export function loadAppSettings(): AppSettings {
     const validLevel = level === 'B1' || level === 'B2' || level === 'C1' ? level : DEFAULT_SETTINGS.defaultVocabLevel;
     const validModes: HideMode[] = ['all', 'random', 'level', 'core'];
     const safeMode = validModes.includes(mode as HideMode) ? (mode as HideMode) : DEFAULT_SETTINGS.defaultHideMode;
+    const theme = parsed.theme === 'dark' ? 'dark' : 'light';
     return {
       defaultHideMode: safeMode,
       defaultHideRatio:
         typeof parsed.defaultHideRatio === 'number' && parsed.defaultHideRatio >= 0 && parsed.defaultHideRatio <= 1
           ? parsed.defaultHideRatio
           : DEFAULT_SETTINGS.defaultHideRatio,
-      defaultVocabLevel: validLevel
+      defaultVocabLevel: validLevel,
+      theme
     };
   } catch {
     return { ...DEFAULT_SETTINGS };

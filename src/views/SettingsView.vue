@@ -11,6 +11,13 @@
 
     <n-card class="settings-card">
       <n-form label-placement="top" label-width="140" class="settings-form">
+        <n-form-item label="外观主题">
+          <n-radio-group v-model:value="form.theme">
+            <n-radio-button value="light">浅色模式</n-radio-button>
+            <n-radio-button value="dark">深色模式</n-radio-button>
+          </n-radio-group>
+        </n-form-item>
+
         <n-form-item label="默认隐藏模式">
           <n-radio-group v-model:value="form.defaultHideMode">
             <n-radio-button value="all">全部隐藏</n-radio-button>
@@ -65,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import { NButton, NCard, NForm, NFormItem, NRadioButton, NRadioGroup, NSpace, NSlider, useMessage } from 'naive-ui';
 import { exportData, importData, loadAppSettings, saveAppSettings } from '../storage';
 import type { AppSettings } from '../types';
@@ -75,8 +82,11 @@ const importInputRef = ref<HTMLInputElement | null>(null);
 const form = ref<AppSettings>({
   defaultHideMode: 'all',
   defaultHideRatio: 0.6,
-  defaultVocabLevel: 'B1'
+  defaultVocabLevel: 'B1',
+  theme: 'light'
 });
+
+const themeContext = inject<{ themeMode: { value: AppSettings['theme'] }; setTheme: (mode: AppSettings['theme']) => void } | undefined>('theme');
 
 onMounted(() => {
   form.value = loadAppSettings();
@@ -84,6 +94,7 @@ onMounted(() => {
 
 function handleSave() {
   saveAppSettings(form.value);
+  themeContext?.setTheme(form.value.theme);
   message.success('设置已保存');
 }
 

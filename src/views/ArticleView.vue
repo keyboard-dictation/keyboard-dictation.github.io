@@ -1,5 +1,5 @@
 <template>
-  <div class="page" v-if="article">
+  <div class="page" :class="{ 'theme-dark': isDark }" v-if="article">
     <header class="page-header">
       <div class="page-header-text">
         <h1 class="page-title">查看短文：《{{ article.title }}》</h1>
@@ -44,13 +44,15 @@
     </n-card>
   </div>
 
-  <n-card v-else class="main-card" content-style="padding: 48px 24px; text-align: center; color: #666;">
-    未找到对应短文，可能已被删除。
-  </n-card>
+  <div v-else class="page" :class="{ 'theme-dark': isDark }">
+    <n-card class="main-card empty-state">
+      <div class="empty-state-text">未找到对应短文，可能已被删除。</div>
+    </n-card>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, inject, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NButton, NCard, NSpace, useMessage } from 'naive-ui';
 import { loadArticles } from '../storage';
@@ -59,6 +61,8 @@ import type { Article } from '../types';
 const router = useRouter();
 const route = useRoute();
 const message = useMessage();
+const themeContext = inject<{ themeMode: { value: 'light' | 'dark' } } | undefined>('theme');
+const isDark = computed(() => themeContext?.themeMode?.value === 'dark');
 
 const article = ref<Article | null>(null);
 
@@ -205,6 +209,62 @@ function goEdit() {
 
 .meta-value {
   color: #555;
+}
+
+/* 深色模式：正文区域深底浅字，保证可读 */
+.theme-dark .page-desc {
+  color: #9ca3af;
+}
+
+.theme-dark .section-title {
+  color: #e5e7eb;
+}
+
+.theme-dark .section-sub {
+  color: #9ca3af;
+}
+
+.theme-dark .section-text {
+  color: #d1d5db;
+}
+
+.theme-dark .section-text-muted {
+  color: #9ca3af;
+}
+
+.theme-dark .content-view {
+  background: #1e1e22;
+  color: #e5e7eb;
+  border: 1px solid #2e2e32;
+}
+
+.theme-dark .section-meta {
+  color: #9ca3af;
+  border-top-color: #2e2e32;
+}
+
+.theme-dark .meta-label {
+  color: #6b7280;
+}
+
+.theme-dark .meta-value {
+  color: #d1d5db;
+}
+
+.empty-state {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.empty-state :deep(.n-card__content) {
+  padding: 48px 24px;
+  text-align: center;
+  color: #666;
+}
+
+.theme-dark .empty-state-text,
+.theme-dark .empty-state :deep(.n-card__content) {
+  color: #9ca3af;
 }
 </style>
 

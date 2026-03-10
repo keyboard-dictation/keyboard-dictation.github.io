@@ -2,11 +2,14 @@ export type HideMode = 'all' | 'random' | 'level' | 'core';
 
 export type VocabLevel = 'B1' | 'B2' | 'C1';
 
-/** 应用设置（如默写页的默认隐藏模式） */
+export type ThemeMode = 'light' | 'dark';
+
+/** 应用设置（如默写页的默认隐藏模式、主题） */
 export interface AppSettings {
   defaultHideMode: HideMode;
   defaultHideRatio: number; // 0-1，仅当 defaultHideMode 为 random 时生效
   defaultVocabLevel: VocabLevel; // 仅当 defaultHideMode 为 level 时生效
+  theme: ThemeMode;
 }
 
 export interface Article {
