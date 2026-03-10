@@ -44,7 +44,9 @@
           </n-layout-header>
           <n-layout-content class="app-content">
             <div class="content-inner">
-              <router-view />
+              <main>
+                <router-view />
+              </main>
               <footer class="app-footer">
                 <span class="footer-item">MIT License</span>
                 <span class="footer-sep">·</span>
@@ -122,11 +124,33 @@ const currentPageTitle = computed(() => {
   return 'keyboard‑dictation';
 });
 
+const defaultMetaDescription = '英文短文默写助手：管理英文短文，支持全部/随机/按等级隐藏字母进行默写练习，记录正确率与练习统计。';
+const pageMetaDescriptions: Record<string, string> = {
+  '/articles': '管理已保存的英文短文，支持查看、编辑、删除和开始默写。',
+  '/articles/new': '新增一篇英文短文，作为默写练习的原文。',
+  '/stats': '查看练习记录、正确率与耗时统计。',
+  '/settings': '设置默认隐藏模式、随机比例与词汇等级，导出导入数据。'
+};
+
 watch(
   currentPageTitle,
   (title) => {
     const suffix = 'keyboard-dictation';
     document.title = title ? `${title} - ${suffix}` : suffix;
+  },
+  { immediate: true }
+);
+
+watch(
+  () => route.path,
+  (path) => {
+    let desc = defaultMetaDescription;
+    if (path.startsWith('/articles') && !path.includes('/view') && !path.includes('/edit')) {
+      desc = path.includes('new') ? pageMetaDescriptions['/articles/new'] : pageMetaDescriptions['/articles'];
+    } else if (path.startsWith('/stats')) desc = pageMetaDescriptions['/stats'];
+    else if (path.startsWith('/settings')) desc = pageMetaDescriptions['/settings'];
+    const el = document.querySelector('meta[name="description"]');
+    if (el) el.setAttribute('content', desc);
   },
   { immediate: true }
 );
