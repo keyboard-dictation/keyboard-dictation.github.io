@@ -25,24 +25,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h } from 'vue';
+import { h, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { NButton, NCard, NDataTable, NSpace, type DataTableColumns } from 'naive-ui';
-import { loadArticles, deleteArticle, saveArticles } from '../storage';
+import { loadArticles, deleteArticle } from '../storage';
 import type { Article } from '../types';
 
 const router = useRouter();
 
-const articles = computed<Article[]>(() => {
-  return loadArticles();
-});
+const articles = ref<Article[]>(loadArticles());
 
 function refresh() {
-  // 触发 computed 重新计算，可以通过重新写入 localStorage 并修改一个 dummy key 来实现。
-  // 简化：直接调用 saveArticles(loadArticles())，利用依赖跟踪。
-  const list = loadArticles();
-  saveArticles(list);
+  articles.value = loadArticles();
 }
+
+onMounted(() => {
+  refresh();
+});
 
 function goNew() {
   router.push('/articles/new');
